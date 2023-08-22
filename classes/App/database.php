@@ -6,7 +6,7 @@ class Database
 {
     protected $connection;
 
-    public function __construct($config)
+    public function __construct(array $config)
     {
         $this->connect($config);
     }

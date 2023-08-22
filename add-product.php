@@ -13,7 +13,7 @@
               <div class="d-grid gap-2 d-md-block pt-3">
                   <a href="index.php" class="btn btn-primary">Products</a>
                   <button class="btn btn-danger" type="button">Cancel</button>
-                  <!-- <button class="btn btn-success" type="submit" onclick="event.preventDefault(); document.getElementById('save-form').submit();">Save</button> -->
+                  <!-- <button class="btn btn-success" type="submit" onclick="event.preventDefault(); document.getElementById('save-form').submit()">Save</button> -->
                   <button class="btn btn-success" type="submit" id="saveButton">Save</button>
               </div>
           </div>
@@ -23,7 +23,7 @@
              <div class="card pt-3">
              <div class="card-body"> 
                <div class="basic-form">
-                <form id="formData" method="Post">
+                <form id="save-form" action="api/saveApi.php" method="Post">
                     <div class="row mb-3">
                       <label for="sku" class="col-sm col-form-label">SKU:</label>
                       <div class="col-sm-11">

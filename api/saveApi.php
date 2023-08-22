@@ -11,7 +11,7 @@ use App\Furniture;
 $config = require '../config.php';
 $db = new Database($config);
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if (isset($_POST['submit'])) {
     $jsonInput = file_get_contents('php://input');
     $productData = json_decode($jsonInput, true);
 

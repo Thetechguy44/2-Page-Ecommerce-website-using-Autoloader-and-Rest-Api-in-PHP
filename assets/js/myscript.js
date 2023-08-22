@@ -23,47 +23,29 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function saveProduct() {
-    const sku = document.querySelector('input[name="sku"]').value;
-    const name = document.querySelector('input[name="name"]').value;
-    const price = parseFloat(document.querySelector('input[name="price"]').value);
-    const productType = document.getElementById('type-switcher').value;
+    const form = document.getElementById('save-form');
+    const formData = new FormData(form);
 
-    let specialAttribute = null;
-
-    if (productType === 'book') {
-        specialAttribute = parseFloat(document.querySelector('input[name="size"]').value);
-    } else if (productType === 'furniture') {
-        const height = parseFloat(document.querySelector('input[name="height"]').value);
-        const width = parseFloat(document.querySelector('input[name="width"]').value);
-        const length = parseFloat(document.querySelector('input[name="length"]').value);
-        specialAttribute = `H: ${height}, W: ${width}, L: ${length}`;
-    } else if (productType === 'dvd') {
-        specialAttribute = parseFloat(document.querySelector('input[name="weight"]').value);
-    }
-
-    const productData = {
-        sku,
-        name,
-        price,
-        productType,
-        specialAttribute
-    };
+    const jsonData = {};
+    formData.forEach((value, key) => {
+        jsonData[key] = value;
+    });
 
     fetch('api/saveApi.php', {
         method: 'POST',
-        body: JSON.stringify(productData),
         headers: {
-            'Content-Type': 'application/json'
-        }
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonData),
     })
     .then(response => response.json())
     .then(data => {
-        // Handle the response (e.g., show success message or redirect)
-        console.log(data.message);
+        // Handle the response data as needed
+        console.log(data);
     })
     .catch(error => {
-        // Handle errors (e.g., show error message)
-        console.error('Error:', error);
+        // Handle errors
+        console.error(error);
     });
 }
 

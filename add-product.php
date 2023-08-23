@@ -55,12 +55,12 @@
 
                         <div class="data-category" id="book" value="book">
                           <div class="row mb-3">
-                            <label for="Size" class="col-sm col-form-label">Size: </label>
+                            <label for="Size" class="col-sm col-form-label">Weight: </label>
                             <div class="col-sm-11">
-                              <input type="number" name="size" class="form-control" id="size" style="width: auto;">
+                              <input type="number" name="weight" class="form-control" id="size" style="width: auto;">
                             </div>
                             <div class="text">
-                              <P>Please provide size in mb.</P>
+                              <P>Please provide weight in Kg.</P>
                             </div>
                           </div>
                         </div>
@@ -85,20 +85,20 @@
                               </div>
                             </div>
                             <div class="text">
-                              <P>Please provide dimension in H x W x L.</P>
+                              <P>Please provide dimension in H x W x L format.</P>
                             </div>
                           </div>
                         </div>
                         <div class="data-category" id="dvd" value="dvd">
                           <div class="row mb-3">
                             <div class="row mb-3">
-                              <label for="weight" class="col-sm col-form-label">Weight: </label>
+                              <label for="weight" class="col-sm col-form-label">size: </label>
                               <div class="col-sm-11">
-                                <input type="number" name="weight" class="form-control" id="weight" style="width: auto;">
+                                <input type="number" name="size" class="form-control" id="weight" style="width: auto;">
                               </div>
                             </div>
                             <div class="text">
-                              <P>Please provide weight in kg.</P>
+                              <P>Please provide size in mb.</P>
                             </div>
                            </div>
                       </div>

@@ -21,7 +21,7 @@ class Book extends Product
     public function save()
     {
         $query = "INSERT INTO products (sku, name, price, productType, weight) 
-                  VALUES ('$sku', '$name', '$price', 'book', '$weight')";
+                  VALUES (:sku, :name, :price, 'book', :weight)";
         
         $statement = $this->db->getConnection()->prepare($query);
         $statement->execute([

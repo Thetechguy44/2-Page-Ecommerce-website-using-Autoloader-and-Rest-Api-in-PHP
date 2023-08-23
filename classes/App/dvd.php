@@ -21,7 +21,7 @@ class Dvd extends Product
     public function save()
     {
         $query = "INSERT INTO products (sku, name, price, productType, size) 
-                  VALUES ('$sku', '$name', '$price', 'dvd', '$size')";
+                  VALUES (:sku, :name, :price, 'dvd', :size)";
         
         $statement = $this->db->getConnection()->prepare($query);
         $statement->execute([

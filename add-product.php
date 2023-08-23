@@ -23,7 +23,7 @@
              <div class="card pt-3">
              <div class="card-body"> 
                <div class="basic-form">
-                <form id="save-form" action="api/saveApi.php" method="Post">
+                <form id="save-form"  method="Post">
                     <div class="row mb-3">
                       <label for="sku" class="col-sm col-form-label">SKU:</label>
                       <div class="col-sm-11">

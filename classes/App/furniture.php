@@ -27,7 +27,7 @@ class Furniture extends Product
     public function save()
     {
         $query = "INSERT INTO products (sku, name, price, productType, height, width, length) 
-                  VALUES (:sku, :name, :price, 'furniture', :height, :width, :length,)";
+                  VALUES (:sku, :name, :price, 'furniture', :height, :width, :length)";
         
         $statement = $this->db->getConnection()->prepare($query);
         $statement->execute([

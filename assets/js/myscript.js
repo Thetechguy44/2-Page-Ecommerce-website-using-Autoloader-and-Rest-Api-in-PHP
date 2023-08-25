@@ -1,6 +1,4 @@
 
-// public/assets/script.js
-
 document.addEventListener('DOMContentLoaded', function() {
     const typeSwitcher = document.getElementById('type-switcher');
     const contentItems = document.querySelectorAll('.data-category');
@@ -19,14 +17,20 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     const saveButton = document.getElementById('saveButton');
-    saveButton.addEventListener('click', saveProduct);
+    const cancelButton = document.getElementById('cancelButton');
+
+    saveButton.addEventListener('click', () => saveProduct('save')); 
+    cancelButton.addEventListener('click', () => saveProduct('cancel')); 
 });
 
-function saveProduct() {
+function saveProduct(action) { // Accept action parameter
     const form = document.getElementById('save-form');
     const formData = new FormData(form);
 
-    const jsonData = {};
+    const jsonData = {
+        action: action, // Include the action in the JSON data
+    };
+
     formData.forEach((value, key) => {
         jsonData[key] = value;
     });
@@ -40,15 +44,19 @@ function saveProduct() {
     })
     .then(response => response.json())
     .then(data => {
-        // Handle the response data as needed
-        console.log(data);
+        if (data.message === 'Product saved successfully' || data.message === 'Product canceled successfully') {
+            // Redirect to the specified URL
+            window.location.href = data.redirect;
+        } else {
+            // Handle error case
+            console.error(data.error);
+        }
     })
     .catch(error => {
         // Handle errors
         console.error(error);
     });
 }
-
 
 
 

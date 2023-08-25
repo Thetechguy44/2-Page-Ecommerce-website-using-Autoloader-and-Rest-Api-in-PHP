@@ -12,8 +12,7 @@
               </div> 
               <div class="d-grid gap-2 d-md-block pt-3">
                   <a href="index.php" class="btn btn-primary">Products</a>
-                  <button class="btn btn-danger" type="button">Cancel</button>
-                  <!-- <button class="btn btn-success" type="submit" onclick="event.preventDefault(); document.getElementById('save-form').submit()">Save</button> -->
+                  <button class="btn btn-danger" id="cancelButton" type="button">Cancel</button>
                   <button class="btn btn-success" type="submit" id="saveButton">Save</button>
               </div>
           </div>

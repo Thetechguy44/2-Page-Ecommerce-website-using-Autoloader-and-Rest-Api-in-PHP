@@ -35,7 +35,7 @@ function saveProduct(action) { // Accept action parameter
         jsonData[key] = value;
     });
 
-    fetch('api/saveApi.php', {
+    fetch('product/saveApi.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -58,7 +58,64 @@ function saveProduct(action) { // Accept action parameter
     });
 }
 
+//display product from the getApi to the index page
+var productContainer = document.getElementById('product');
 
+// Fetch product data from the API
+fetch('product/getApi.php')
+    .then(response => response.json())
+    .then(data => {
+        // Loop through each product and create a box
+        data.forEach(products => {
+            var productBox = document.createElement('div');
+            productBox.className = 'col-lg-3 col-md-6 col-sm-12 pb-1';
+
+            // Display product based on type
+            if (products.productType === 'dvd') {
+                productBox.innerHTML = `
+                <div class="card"> 
+                <div class="border-left border-right  p-0 pb-3">
+                    <input type="checkbox" class="delete-checkbox" name="" id="">
+                    <div class="text-center">
+                    <h6>${products.sku}</h6>
+                    <p> ${products.name}</p>
+                    <p> ${products.price} $</p>
+                    <p>Size: ${products.size} MB</p>
+                </div>
+                </div>
+                `;
+            } else if (products.productType === 'book') {
+                productBox.innerHTML = `
+                <div class="card"> 
+                <div class="border-left border-right  p-0 pb-3">
+                    <input type="checkbox" class="delete-checkbox" name="" id="">
+                    <div class="text-center">
+                    <h6>${products.sku}</h6>
+                    <p> ${products.name}</p>
+                    <p> ${products.price} $</p>
+                    <p>Weight: ${products.weight} KG</p>
+                </div>
+                </div>
+                `;
+            } else if (products.productType === 'furniture') {
+                productBox.innerHTML = `
+                <div class="card"> 
+                <div class="border-left border-right  p-0 pb-3">
+                    <input type="checkbox" class="delete-checkbox" name="" id="">
+                    <div class="text-center">
+                    <h6>${products.sku}</h6>
+                    <p> ${products.name}</p>
+                    <p> ${products.price} $</p>
+                    <p>Dimensions: ${products.height} x ${products.width} x ${products.length}</p>
+                </div>
+                </div>
+                `;
+            }
+
+            productContainer.appendChild(productBox);
+        });
+    })
+    .catch(error => console.error('Error fetching product data:', error));
 
 
 

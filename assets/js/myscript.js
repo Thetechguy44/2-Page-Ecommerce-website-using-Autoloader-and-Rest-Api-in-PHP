@@ -24,23 +24,46 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function saveProduct(action) { // Accept action parameter
-    const form = document.getElementById('save-form');
-    const formData = new FormData(form);
+    const sku = document.querySelector('input[name="sku"]').value;
+    const name = document.querySelector('input[name="name"]').value;
+    const price = parseFloat(document.querySelector('input[name="price"]').value);
+    const productType = document.getElementById('type-switcher').value;
 
-    const jsonData = {
-        action: action, // Include the action in the JSON data
+    let weight = null;
+    let height = null;
+    let width = null;
+    let length = null;
+    let size = null;
+
+    if (productType === 'book') {
+        weight = parseFloat(document.querySelector('input[name="weight"]').value);
+    } else if (productType === 'furniture') {
+        height = parseFloat(document.querySelector('input[name="height"]').value);
+        width = parseFloat(document.querySelector('input[name="width"]').value);
+        length = parseFloat(document.querySelector('input[name="length"]').value);
+    } else if (productType === 'dvd') {
+        size = parseFloat(document.querySelector('input[name="size"]').value);
+    }
+
+    const productData = {
+	    action: action,
+        sku,
+        name,
+        price,
+        productType,
+        weight,
+        height,
+        width,
+        length,
+        size,
     };
-
-    formData.forEach((value, key) => {
-        jsonData[key] = value;
-    });
 
     fetch('product/saveApi.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(jsonData),
+        body: JSON.stringify(productData),
     })
     .then(response => response.json())
     .then(data => {

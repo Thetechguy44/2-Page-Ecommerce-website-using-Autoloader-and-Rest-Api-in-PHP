@@ -10,6 +10,8 @@ use App\Furniture;
 $config = require '../config.php';
 $db = new Database($config);
 
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+
 // Check if the SKU parameter is present in the URL
 if (isset($_GET['sku'])) {
     $sku = $_GET['sku'];
@@ -39,4 +41,5 @@ if (isset($_GET['sku'])) {
     header('Content-Type: application/json');
     echo json_encode($products);
 }
-?>
+}
+

@@ -75,12 +75,13 @@ fetch('product/getApi.php')
                 productBox.innerHTML = `
                 <div class="card"> 
                 <div class="border-left border-right  p-0 pb-3">
-                    <input type="checkbox" class="delete-checkbox" name="" id="">
+                    <input type="checkbox" class="delete-checkbox" id="${products.id}">
                     <div class="text-center">
                     <h6>${products.sku}</h6>
                     <p> ${products.name}</p>
                     <p> ${products.price} $</p>
                     <p>Size: ${products.size} MB</p>
+                    </div>
                 </div>
                 </div>
                 `;
@@ -88,12 +89,13 @@ fetch('product/getApi.php')
                 productBox.innerHTML = `
                 <div class="card"> 
                 <div class="border-left border-right  p-0 pb-3">
-                    <input type="checkbox" class="delete-checkbox" name="" id="">
+                    <input type="checkbox" class="delete-checkbox" id="${products.id}">
                     <div class="text-center">
                     <h6>${products.sku}</h6>
                     <p> ${products.name}</p>
                     <p> ${products.price} $</p>
                     <p>Weight: ${products.weight} KG</p>
+                    </div>
                 </div>
                 </div>
                 `;
@@ -101,12 +103,13 @@ fetch('product/getApi.php')
                 productBox.innerHTML = `
                 <div class="card"> 
                 <div class="border-left border-right  p-0 pb-3">
-                    <input type="checkbox" class="delete-checkbox" name="" id="">
+                    <input type="checkbox" class="delete-checkbox" id="${products.id}">
                     <div class="text-center">
                     <h6>${products.sku}</h6>
                     <p> ${products.name}</p>
                     <p> ${products.price} $</p>
                     <p>Dimensions: ${products.height} x ${products.width} x ${products.length}</p>
+                    </div>
                 </div>
                 </div>
                 `;
@@ -118,22 +121,45 @@ fetch('product/getApi.php')
     .catch(error => console.error('Error fetching product data:', error));
 
 
+// code snippet for mass deletion.
+document.addEventListener('DOMContentLoaded', function () {
+    const selectButton = document.getElementById('selectButton');
+    const deleteButton = document.getElementById('deleteButton');
 
-// document.getElementById("selectButton").addEventListener("click", function() {
-// const checkboxes = document.querySelectorAll('.delete-checkbox');
-// checkboxes.forEach(function(checkbox) {
-//     checkbox.removeAttribute('disabled');
-// });
-// this.disabled = true; // Disable the select button
-// document.getElementById("deleteButton").removeAttribute('disabled'); // Enable the delete button
-// });
+    selectButton.addEventListener('click', function () {
+        const checkboxes = document.querySelectorAll('.delete-checkbox');
+        checkboxes.forEach(function (checkbox) {
+            checkbox.removeAttribute('disabled');
+        });
+        this.disabled = true;
+        deleteButton.removeAttribute('disabled');
+    });
 
-// document.getElementById("deleteButton").addEventListener("click", function() {
-// const checkboxes = document.querySelectorAll('.delete-checkbox:checked');
+    deleteButton.addEventListener('click', function () {
+        const checkboxes = document.querySelectorAll('.delete-checkbox:checked');
+        const productIds = Array.from(checkboxes).map(checkbox => checkbox.id);
 
-// checkboxes.forEach(function(checkbox) {
-//     const listItem = checkbox.parentNode;
-//     listItem.parentNode.removeChild(listItem);
-// });
-// });
+        fetch('product/saveApi.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ productIds: productIds }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message === 'Products deleted successfully') {
+                // Reload the page after successful deletion
+                location.reload();
+            } else {
+                // Handle error case
+                console.error(data.error);
+            }
+        })
+        .catch(error => {
+            // Handle errors
+            console.error(error);
+        });
+    });
+});
 

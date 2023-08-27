@@ -74,5 +74,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             http_response_code(500); // Internal Server Error
             echo json_encode(['error' => 'Failed to cancel the product']);
         }
+    }else{
+
+    $productIds = $productData['productIds'];
+    // Loop through the selected product IDs and delete them from the database
+    $deleteStatement = $db->getConnection()->prepare("DELETE FROM products WHERE id = :productId");
+
+    // Loop through the selected product IDs and execute the delete statement
+    foreach ($productIds as $productId) {
+        $deleteStatement->bindParam(':productId', $productId, PDO::PARAM_INT);
+        $deleteStatement->execute();
     }
+
+    // Return a success response
+    header('Content-Type: application/json');
+    echo json_encode(['message' => 'Products deleted successfully']);
+  }
 }

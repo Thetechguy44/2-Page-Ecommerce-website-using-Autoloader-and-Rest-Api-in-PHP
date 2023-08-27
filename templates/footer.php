@@ -3,5 +3,4 @@
     <script src="assets/js/bootstrap.js"></script>
     <script src="assets/js/myscript.js"></script>
 </body>
-
 </html>

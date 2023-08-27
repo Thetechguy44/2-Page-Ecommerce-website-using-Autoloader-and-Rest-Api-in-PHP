@@ -16,17 +16,16 @@ document.addEventListener('DOMContentLoaded', function() {
         item.style.display = 'none';
     });
 
-    const saveButton = document.getElementById('saveButton');
-    const cancelButton = document.getElementById('cancelButton');
 
-    saveButton.addEventListener('click', () => saveProduct('save')); 
-    cancelButton.addEventListener('click', () => saveProduct('cancel')); 
+//savving product...
+    const saveButton = document.getElementById('saveButton');
+    saveButton.addEventListener('click', saveProduct); 
 });
 
-function saveProduct(action) { // Accept action parameter
+function saveProduct() {
     const sku = document.querySelector('input[name="sku"]').value;
     const name = document.querySelector('input[name="name"]').value;
-    const price = parseFloat(document.querySelector('input[name="price"]').value);
+    const priceInput = document.querySelector('input[name="price"]');
     const productType = document.getElementById('type-switcher').value;
 
     let weight = null;
@@ -45,8 +44,62 @@ function saveProduct(action) { // Accept action parameter
         size = parseFloat(document.querySelector('input[name="size"]').value);
     }
 
+    const displayError = (input, message) => {
+        const errorSpan = input.nextElementSibling; // Get the adjacent <span> element
+        errorSpan.textContent = message;
+    };
+
+    const validateNumber = (input) => {
+        const value = parseFloat(input.value);
+        if (isNaN(value)) {
+            displayError(input, `Please, provide the data of indicated type`);
+            return null;
+        }
+        return value;
+    };
+
+
+    if (!sku || !name || !priceInput.value.trim()) {
+        if (!sku) {
+            document.querySelector('input[name="sku"]').classList.add('error');
+            displayError(document.querySelector('input[name="sku"]'), 'Please, submit required data');
+        }
+        if (!name) {
+            document.querySelector('input[name="name"]').classList.add('error');
+            displayError(document.querySelector('input[name="name"]'), 'Please, submit required data');
+        }
+        if (!priceInput.value.trim()) {
+            priceInput.classList.add('error');
+            displayError(priceInput, 'Please, submit required data');
+        }
+        return; // Prevent form submission
+    }
+
+    const price = validateNumber(priceInput);
+    if (price === null) {
+        return; // Prevent form submission
+    }
+
+    let isValid = true;
+
+    if (productType === 'book') {
+        weight = validateNumber(document.querySelector('input[name="weight"]'));
+        isValid = isValid && weight !== null;
+    } else if (productType === 'furniture') {
+        height = validateNumber(document.querySelector('input[name="height"]'));
+        width = validateNumber(document.querySelector('input[name="width"]'));
+        length = validateNumber(document.querySelector('input[name="length"]'));
+        isValid = isValid && height !== null && width !== null && length !== null;
+    } else if (productType === 'dvd') {
+        size = validateNumber(document.querySelector('input[name="size"]'));
+        isValid = isValid && size !== null;
+    }
+
+    if (!isValid) {
+        return; // Prevent form submission
+    }
+
     const productData = {
-	    action: action,
         sku,
         name,
         price,
@@ -80,10 +133,42 @@ function saveProduct(action) { // Accept action parameter
         console.error(error);
     });
 }
+//end for saving product...
+
+//code to handle cancle request
+document.addEventListener('DOMContentLoaded', function() {
+    const cancelButton = document.getElementById('cancelButton');
+
+    cancelButton.addEventListener('click', cancelProduct);
+
+    function cancelProduct() {
+        fetch('product/saveApi.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'cancel'
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message === 'Product canceled successfully') {
+                window.location.href = data.redirect;
+            } else {
+                console.error(data.error);
+            }
+        })
+        .catch(error => {
+            console.error(error);
+        });
+    }
+});
+//end for cancel request
+
 
 //display product from the getApi to the index page
 var productContainer = document.getElementById('product');
-
 // Fetch product data from the API
 fetch('product/getApi.php')
     .then(response => response.json())
@@ -142,9 +227,10 @@ fetch('product/getApi.php')
         });
     })
     .catch(error => console.error('Error fetching product data:', error));
+//end for index desplay
 
 
-// code snippet for mass deletion.
+// code snippet for mass deletion request.
 document.addEventListener('DOMContentLoaded', function () {
     const selectButton = document.getElementById('selectButton');
     const deleteButton = document.getElementById('deleteButton');
@@ -185,4 +271,4 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
-
+//end for mass deletion

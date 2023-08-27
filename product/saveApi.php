@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $action = isset($productData['action']) ? $productData['action'] : '';
 
-    if ($action === 'save') {
+    if (isset($productData['sku'])) {
         $sku = $productData['sku'];
         $name = $productData['name'];
         $price = $productData['price'];

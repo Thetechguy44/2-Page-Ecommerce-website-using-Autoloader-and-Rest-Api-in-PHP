@@ -13,4 +13,10 @@
 
     <!-- Customized Bootstrap Stylesheet -->
     <link rel="stylesheet" href="assets/css/bootstrap.css">
+
+    <style>
+        .error-message{
+            color: red;
+        }
+    </style>
 </head>

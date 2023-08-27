@@ -27,18 +27,21 @@
                       <label for="sku" class="col-sm col-form-label">SKU:</label>
                       <div class="col-sm-11">
                         <input type="text" name="sku" class="form-control" id="sku">
+                        <span class="error-message"></span>
                       </div>
                     </div>
                     <div class="row mb-3">
                       <label for="name" class="col-sm col-form-label">Name:</label>
                       <div class="col-sm-11">
                         <input type="text" name="name" class="form-control" id="name">
+                        <span class="error-message"></span>
                       </div>
                     </div>
                     <div class="row mb-3">
                       <label for="price" class="col-sm col-form-label">Price:</label>
                       <div class="col-sm-11">
                         <input type="number" name="price" class="form-control" id="price">
+                        <span class="error-message"></span>
                       </div>
                     </div>
           
@@ -57,6 +60,7 @@
                             <label for="Size" class="col-sm col-form-label">Weight: </label>
                             <div class="col-sm-11">
                               <input type="number" name="weight" class="form-control" id="size" style="width: auto;">
+                              <span class="error-message"></span>
                             </div>
                             <div class="text">
                               <P>Please provide weight in Kg.</P>
@@ -69,18 +73,21 @@
                               <label for="height" class="col-sm col-form-label">Height: </label>
                               <div class="col-sm-11">
                                 <input type="number" name="height" class="form-control" id="height" style="width: auto;">
+                                <span class="error-message"></span>
                               </div>
                             </div>
                             <div class="row mb-3">
                               <label for="Width" class="col-sm col-form-label">Width: </label>
                               <div class="col-sm-11">
                                 <input type="number" name="width" class="form-control" id="width" style="width: auto;">
+                                <span class="error-message"></span>
                               </div>
                             </div>
                             <div class="row mb-3">
                               <label for="length" class="col-sm col-form-label">Length: </label>
                               <div class="col-sm-11">
                                 <input type="number" name="length" class="form-control" id="length" style="width: auto;">
+                                <span class="error-message"></span>
                               </div>
                             </div>
                             <div class="text">
@@ -94,6 +101,7 @@
                               <label for="weight" class="col-sm col-form-label">size: </label>
                               <div class="col-sm-11">
                                 <input type="number" name="size" class="form-control" id="weight" style="width: auto;">
+                                <span class="error-message"></span>
                               </div>
                             </div>
                             <div class="text">

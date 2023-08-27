@@ -22,12 +22,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $price = $productData['price'];
         $productType = $productData['productType'];
 
-        // Handle other inputs based on productType
-        $size = $productData['size'];
-        $weight = $productData['weight'];
-        $height = $productData['height'];
-        $width = $productData['width'];
-        $length = $productData['length'];
+    // Initialize empty error array
+    $errors = [];
+
+    // Validate and sanitize inputs
+    if (!is_numeric($productData['price'])) {
+        $errors['price'] = 'Price must be a valid number.';
+    } else {
+        $price = (float)$productData['price'];
+    }
+
+    // Handle other inputs based on productType
+    if ($productType === 'dvd') {
+        if (!is_numeric($productData['size'])) {
+            $errors['size'] = 'Size must be a valid number.';
+        } else {
+            $size = (int)$productData['size'];
+        }
+    } elseif ($productType === 'book') {
+        if (!is_numeric($productData['weight'])) {
+            $errors['weight'] = 'Weight must be a valid number.';
+        } else {
+            $weight = (float)$productData['weight'];
+        }
+    } elseif ($productType === 'furniture') {
+        if (!is_numeric($productData['height'])) {
+            $errors['height'] = 'Height must be a valid number.';
+        } else {
+            $height = (int)$productData['height'];
+        }
+        
+        if (!is_numeric($productData['width'])) {
+            $errors['width'] = 'Width must be a valid number.';
+        } else {
+            $width = (int)$productData['width'];
+        }
+        
+        if (!is_numeric($productData['length'])) {
+            $errors['length'] = 'Length must be a valid number.';
+        } else {
+            $length = (int)$productData['length'];
+        }
+    }
+
+    // If there are validation errors, return error response
+    if (!empty($errors)) {
+        http_response_code(400); // Bad Request
+        echo json_encode(['errors' => $errors]);
+        exit;
+    }
 
         // Create the appropriate product instance
         if ($productType === 'dvd') {

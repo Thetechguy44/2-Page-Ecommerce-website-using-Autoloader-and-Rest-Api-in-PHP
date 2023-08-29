@@ -17,69 +17,78 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = isset($productData['action']) ? $productData['action'] : '';
 
     if (isset($productData['sku'])) {
+        // Validate and sanitize inputs
+        $errors = []; 
+
+      // Validate common inputs
+      $requiredFields = ['sku', 'name', 'price', 'productType'];
+      foreach ($requiredFields as $field) {
+          if (!isset($productData[$field]) || empty($productData[$field])) {
+              $errors[$field] = ucfirst($field) . 'Field is required.';
+          }
+      }
+
+          // Check if SKU is already used
         $sku = $productData['sku'];
-        $name = $productData['name'];
-        $price = $productData['price'];
-        $productType = $productData['productType'];
+        $skuCheckQuery = "SELECT COUNT(*) FROM products WHERE sku = :sku";
+        $skuCheckStatement = $db->getConnection()->prepare($skuCheckQuery);
+        $skuCheckStatement->execute(['sku' => $sku]);
+        $skuCount = $skuCheckStatement->fetchColumn();
 
-    // Initialize empty error array
-    $errors = [];
+        if ($skuCount > 0) {
+            $errors['sku'] = 'This SKU has already been used';
+        }
 
-    // Validate and sanitize inputs
-    if (!is_numeric($productData['price'])) {
-        $errors['price'] = 'Price must be a valid number.';
-    } else {
-        $price = (float)$productData['price'];
-    }
+      if (!is_numeric($productData['price'])) {
+          $errors['price'] = 'Price must be a valid number.';
+      }
 
-    // Handle other inputs based on productType
-    if ($productType === 'dvd') {
-        if (!is_numeric($productData['size'])) {
-            $errors['size'] = 'Size must be a valid number.';
-        } else {
-            $size = (int)$productData['size'];
-        }
-    } elseif ($productType === 'book') {
-        if (!is_numeric($productData['weight'])) {
-            $errors['weight'] = 'Weight must be a valid number.';
-        } else {
-            $weight = (float)$productData['weight'];
-        }
-    } elseif ($productType === 'furniture') {
-        if (!is_numeric($productData['height'])) {
-            $errors['height'] = 'Height must be a valid number.';
-        } else {
-            $height = (int)$productData['height'];
-        }
-        
-        if (!is_numeric($productData['width'])) {
-            $errors['width'] = 'Width must be a valid number.';
-        } else {
-            $width = (int)$productData['width'];
-        }
-        
-        if (!is_numeric($productData['length'])) {
-            $errors['length'] = 'Length must be a valid number.';
-        } else {
-            $length = (int)$productData['length'];
-        }
-    }
+    
+      $productType = $productData['productType'];
+      $productTypeErrors = [];
+      
+      if ($productType === 'dvd' && !is_numeric($productData['size'])) {
+          $productTypeErrors['size'] = 'Size must be a valid number.';
+      }
+      
+      if ($productType === 'book' && !is_numeric($productData['weight'])) {
+          $productTypeErrors['weight'] = 'Weight must be a valid number.';
+      }
+      
+      if ($productType === 'furniture') {
+          if (!is_numeric($productData['height'])) {
+              $productTypeErrors['height'] = 'Height must be a valid number.';
+          }
+      
+          if (!is_numeric($productData['width'])) {
+              $productTypeErrors['width'] = 'Width must be a valid number.';
+          }
+      
+          if (!is_numeric($productData['length'])) {
+              $productTypeErrors['length'] = 'Length must be a valid number.';
+          }
+      }
+      
+      if (!in_array($productType, ['dvd', 'book', 'furniture'])) {
+          $productTypeErrors['error'] = 'Invalid product type';
+      }
+      
+      $errors = array_merge($errors, $productTypeErrors);
 
-    // If there are validation errors, return error response
-    if (!empty($errors)) {
-        http_response_code(400); // Bad Request
-        echo json_encode(['errors' => $errors]);
-        exit;
-    }
+      // If there are validation errors, return error response
+      if (!empty($errors)) {
+          http_response_code(400); // Bad Request
+          echo json_encode(['errors' => $errors]);
+          exit;
+      }
 
-        // Create the appropriate product instance
-        if ($productType === 'dvd') {
-            $product = new Dvd($sku, $name, $price, $size, $db);
-        } elseif ($productType === 'book') {
-            $product = new Book($sku, $name, $price, $weight, $db);
-        } elseif ($productType === 'furniture') {
-            $product = new Furniture($sku, $name, $price, $height, $width, $length, $db);
-        }
+      // Create the appropriate product instance
+      $product = match ($productType) {
+          'dvd' => new Dvd($productData['sku'], $productData['name'], $productData['price'], $productData['size'], $db),
+          'book' => new Book($productData['sku'], $productData['name'], $productData['price'], $productData['weight'], $db),
+          'furniture' => new Furniture($productData['sku'], $productData['name'], $productData['price'], $productData['height'], $productData['width'], $productData['length'], $db),
+          default => null,
+      };
 
         // Save the product
         try {
@@ -87,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Save the SKU in a session
             session_start();
-            $_SESSION['last_added_sku'] = $sku;
+            $_SESSION['last_added_sku'] = $productData['sku'];
 
             // Return a success response
             header('Content-Type: application/json');

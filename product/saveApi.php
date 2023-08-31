@@ -16,12 +16,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $action = isset($productData['action']) ? $productData['action'] : '';
 
-    if (isset($productData['sku'])) {
-        // Validate and sanitize inputs
-        $errors = []; 
-
+    if (isset($productData['sku'])) { 
       // Validate common inputs
       $requiredFields = ['sku', 'name', 'price', 'productType'];
+      $errors = [];
       foreach ($requiredFields as $field) {
           if (!isset($productData[$field]) || empty($productData[$field])) {
               $errors[$field] = ucfirst($field) . 'Field is required.';
@@ -86,8 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $product = match ($productType) {
           'dvd' => new Dvd($productData['sku'], $productData['name'], $productData['price'], $productData['size'], $db),
           'book' => new Book($productData['sku'], $productData['name'], $productData['price'], $productData['weight'], $db),
-          'furniture' => new Furniture($productData['sku'], $productData['name'], $productData['price'], $productData['height'], $productData['width'], $productData['length'], $db),
-          default => null,
+          'furniture' => new Furniture($productData['sku'], $productData['name'], $productData['price'], $productData['height'], $productData['width'], $productData['length'], $db)
       };
 
         // Save the product
@@ -126,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             http_response_code(500); // Internal Server Error
             echo json_encode(['error' => 'Failed to cancel the product']);
         }
-    }else{
+    }elseif (isset($productData['productIds'])){
 
     $productIds = $productData['productIds'];
     // Loop through the selected product IDs and delete them from the database

@@ -1,0 +1,4 @@
+
+#ignore all .sql files
+
+*.sql

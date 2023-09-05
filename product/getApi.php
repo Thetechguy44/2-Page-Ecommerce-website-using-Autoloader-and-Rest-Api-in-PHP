@@ -1,6 +1,6 @@
 <?php
 
-require_once '../autoload/autoloader.php';
+require_once '../autoload/Autoloader.php';
 
 use App\Database;
 use App\Dvd;

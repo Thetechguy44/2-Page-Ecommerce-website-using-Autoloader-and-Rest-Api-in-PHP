@@ -22,7 +22,7 @@
              <div class="card pt-3">
              <div class="card-body"> 
                <div class="basic-form">
-                <form id="save-form"  method="Post">
+                <form id="product_form"  method="Post" class="product_form">
                     <div class="row mb-3">
                       <label for="sku" class="col-sm col-form-label">SKU:</label>
                       <div class="col-sm-11">
@@ -47,9 +47,9 @@
           
                     <div class="row mb-3">
                         <label for="text" class="col-lg-2 col-form-label">Type Switcher:</label>
-                            <select class="form-select form-select-lg mb-3" name="productType" aria-label=".form-select-lg example" value="Switcher" id="type-switcher">
+                            <select class="form-select form-select-lg mb-3" name="productType" aria-label=".form-select-lg example" value="Switcher" id="productType">
                             <option selected value="Switcher">Type Switcher</option>
-                            <option value="book">Books</option>
+                            <option value="book">Book</option>
                             <option value="furniture">Furniture</option>
                             <option value="dvd">DVD</option>
                             </select>        
@@ -59,7 +59,7 @@
                           <div class="row mb-3">
                             <label for="Size" class="col-sm col-form-label">Weight: </label>
                             <div class="col-sm-11">
-                              <input type="number" name="weight" class="form-control" id="size" style="width: auto;">
+                              <input type="number" name="weight" class="form-control" id="weight" style="width: auto;">
                               <span class="error-message"></span>
                             </div>
                             <div class="text">
@@ -100,7 +100,7 @@
                             <div class="row mb-3">
                               <label for="weight" class="col-sm col-form-label">size: </label>
                               <div class="col-sm-11">
-                                <input type="number" name="size" class="form-control" id="weight" style="width: auto;">
+                                <input type="number" name="size" class="form-control" id="size" style="width: auto;">
                                 <span class="error-message"></span>
                               </div>
                             </div>

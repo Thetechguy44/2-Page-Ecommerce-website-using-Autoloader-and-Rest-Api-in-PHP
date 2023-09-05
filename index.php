@@ -10,8 +10,8 @@
                     <h1 class="m-0 display-5 font-weight-semi-bold">Product List</h1>
                 </div> 
                 <div class="d-grid gap-2 d-md-block pt-3">
-                    <a href="add-product.php" class="btn btn-primary">Add Product</a>
-                    <button class="btn btn-danger" id="selectButton">Mass Delete Action</button>
+                    <a href="add-product.php" class="btn btn-primary">ADD PRODUCT</a>
+                    <button class="btn btn-danger" id="selectButton">MASS DELETE</button>
                     <button type="button" class="btn btn-success" id="deleteButton" disabled>Apply</button>
                 </div>
             </div>

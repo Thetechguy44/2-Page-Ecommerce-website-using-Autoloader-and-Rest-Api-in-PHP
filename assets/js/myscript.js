@@ -1,24 +1,5 @@
 
-//type switcher
-document.addEventListener('DOMContentLoaded', function() {
-    const typeSwitcher = document.getElementById('type-switcher');
-    const contentItems = document.querySelectorAll('.data-category');
-    
-    typeSwitcher.addEventListener('change', () => {
-        const selectedValue = typeSwitcher.value;
-    
-        contentItems.forEach((item) => {
-        item.style.display = item.id === selectedValue ? 'block' : 'none';
-        });
-    });
-    
-    // Hide all content items initially
-    contentItems.forEach((item) => {
-        item.style.display = 'none';
-    });  
-});
-
-//savving product...
+//saving product...
 document.addEventListener('DOMContentLoaded', function() {
     const saveButton = document.getElementById('saveButton');
     saveButton.addEventListener('click', saveProduct); 
@@ -27,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const sku = document.querySelector('input[name="sku"]').value;
         const name = document.querySelector('input[name="name"]').value;
         const priceInput = document.querySelector('input[name="price"]');
-        const productType = document.getElementById('type-switcher').value;
+        const productType = document.getElementById('productType').value;
 
         let weight = null;
         let height = null;
@@ -137,37 +118,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 //end for saving product...
 
-//code to handle cancle request
-document.addEventListener('DOMContentLoaded', function() {
-    const cancelButton = document.getElementById('cancelButton');
-
-    cancelButton.addEventListener('click', cancelProduct);
-
-    function cancelProduct() {
-        fetch('product/saveApi.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                action: 'cancel'
-            }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.message === 'Product canceled successfully') {
-                window.location.href = data.redirect;
-            } else {
-                console.error(data.error);
-            }
-        })
-        .catch(error => {
-            console.error(error);
-        });
-    }
-});
-//end for cancel request
-
 
 //display product from the getApi to the index page
 var productContainer = document.getElementById('product');
@@ -230,47 +180,3 @@ fetch('product/getApi.php')
     })
     .catch(error => console.error('Error fetching product data:', error));
 //end for index desplay
-
-
-// code snippet for mass deletion request.
-document.addEventListener('DOMContentLoaded', function () {
-    const selectButton = document.getElementById('selectButton');
-    const deleteButton = document.getElementById('deleteButton');
-
-    selectButton.addEventListener('click', function () {
-        const checkboxes = document.querySelectorAll('.delete-checkbox');
-        checkboxes.forEach(function (checkbox) {
-            checkbox.removeAttribute('disabled');
-        });
-        this.disabled = true;
-        deleteButton.removeAttribute('disabled');
-    });
-
-    deleteButton.addEventListener('click', function () {
-        const checkboxes = document.querySelectorAll('.delete-checkbox:checked');
-        const productIds = Array.from(checkboxes).map(checkbox => checkbox.id);
-
-        fetch('product/saveApi.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ productIds: productIds }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.message === 'Products deleted successfully') {
-                // Reload the page after successful deletion
-                location.reload();
-            } else {
-                // Handle error case
-                console.error(data.error);
-            }
-        })
-        .catch(error => {
-            // Handle errors
-            console.error(error);
-        });
-    });
-});
-//end for mass deletion

@@ -120,6 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 //display product from the getApi to the index page
+document.addEventListener('DOMContentLoaded', function() {
 var productContainer = document.getElementById('product');
 // Fetch product data from the API
 fetch('product/getApi.php')
@@ -174,9 +175,13 @@ fetch('product/getApi.php')
                 </div>
                 `;
             }
-
+ 
             productContainer.appendChild(productBox);
         });
+        
+        I.amOnPage('/');
+        I.waitForVisible('.delete-checkbox', 10);
     })
     .catch(error => console.error('Error fetching product data:', error));
+});
 //end for index desplay

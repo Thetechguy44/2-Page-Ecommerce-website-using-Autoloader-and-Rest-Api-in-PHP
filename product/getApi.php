@@ -7,39 +7,53 @@ use App\Dvd;
 use App\Book;
 use App\Furniture;
 
-$config = require '../config.php';
-$db = new Database($config);
+class getApi {
+    private $db;
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-
-// Check if the SKU parameter is present in the URL
-if (isset($_GET['sku'])) {
-    $sku = $_GET['sku'];
-
-    $query = "SELECT * FROM products WHERE sku = :sku";
-    $statement = $db->getConnection()->prepare($query);
-    $statement->execute(['sku' => $sku]);
-    $productData = $statement->fetch(PDO::FETCH_ASSOC);
-
-    if (!$productData) {
-        http_response_code(404);
-        echo json_encode(['error' => 'Product not found']);
-        exit;
+    public function __construct($config) {
+        $this->db = new Database($config);
     }
 
-    // Return product data as JSON
-    header('Content-Type: application/json');
-    echo json_encode($productData);
-} else {
-    // If no SKU parameter, retrieve all products
-    $query = "SELECT * FROM products";
-    $statement = $db->getConnection()->prepare($query);
-    $statement->execute();
-    $products = $statement->fetchAll(PDO::FETCH_ASSOC);
+    public function handleGetRequest() {
+        if (isset($_GET['sku'])) {
+            $sku = $_GET['sku'];
+            return $this->getProductBySku($sku);
+        } else {
+            return $this->getAllProducts();
+        }
+    }
 
-    // Return product data array as JSON
-    header('Content-Type: application/json');
-    echo json_encode($products);
-}
+    private function getProductBySku($sku) {
+        $query = "SELECT * FROM products WHERE sku = :sku";
+        $statement = $this->db->getConnection()->prepare($query);
+        $statement->execute(['sku' => $sku]);
+        $productData = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if (!$productData) {
+            http_response_code(404);
+            return ['error' => 'Product not found'];
+        }
+
+        return $productData;
+    }
+
+    private function getAllProducts() {
+        $query = "SELECT * FROM products";
+        $statement = $this->db->getConnection()->prepare($query);
+        $statement->execute();
+        $products = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $products;
+    }
 }
 
+// Initialize the getApi class and handle the GET request
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    $config = require '../config.php';
+    $api = new getApi($config);
+    $response = $api->handleGetRequest();
+
+    // Return the response as JSON
+    header('Content-Type: application/json');
+    echo json_encode($response);
+}

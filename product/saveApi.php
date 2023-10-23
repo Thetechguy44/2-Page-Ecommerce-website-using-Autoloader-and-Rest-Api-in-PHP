@@ -10,64 +10,156 @@ use App\Furniture;
 class SaveApi
 {
     private $db;
-    
+
     public function __construct(Database $db)
     {
         $this->db = $db;
     }
-    
+
     public function handleRequest()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $jsonInput = file_get_contents('php://input');
             $productData = json_decode($jsonInput, true);
-            
+    
             $action = isset($productData['action']) ? $productData['action'] : '';
-
+    
             if (isset($productData['sku'])) {
-
                 $productType = $productData['productType'];
-
+    
                 $commonErrors = $this->validateCommonFields($productData);
                 $productTypeErrors = $this->validateProductTypeFields($productType, $productData);
+                $existingSkuError = $this->validateExistingSku($productData['sku']);
                 
-              
-                // Create the appropriate product instance
-                $product = $this->createProduct($productType, $productData);
-
+                // Check for validation errors
                 $errors = array_merge($commonErrors, $productTypeErrors);
-
-                $sku = $productData['sku'];
-                $existingSkuError = $this->validateExistingSku($sku);
+    
                 if ($existingSkuError) {
                     $errors['sku'] = $existingSkuError;
                 }
-                    if (empty($errors)) {
-                        return $this->saveProduct($product, $productData);
+    
+                if (empty($errors)) {
+                    $product = $this->createProduct($productType, $productData);
+    
+                    if ($product) {
+                        try {
+                            $product->save();
+                            session_start();
+                            $_SESSION['last_added_sku'] = $productData['sku'];
+    
+                            return ['message' => 'Product saved successfully', 'redirect' => 'index.php'];
+                        } catch (\Exception $e) {
+                            return ['error' => 'Failed to save the product'];
+                        }
                     } else {
-                        return ['errors' => $errors];
+                        return ['error' => 'Invalid product type'];
                     }
-              
+                } else {
+                    return ['errors' => $errors];
+                }
             } elseif ($action === 'cancel') {
-                // Handle cancel action and database removal
                 return $this->cancelProduct($action);
-
             } elseif (isset($productData['productIds'])) {
-
                 return $this->deleteProducts($productData);
             }
         }
-        
+    
         return ['error' => 'Invalid request'];
+    }
+    
+    private function createProduct($productType, $productData)
+    {
+        $this->validateProductData($productData);
+
+        switch ($productType) {
+            case 'book':
+                return $this->createBook($productData);
+            case 'dvd':
+                return $this->createDvd($productData);
+            case 'furniture':
+                return $this->createFurniture($productData);
+            default:
+                throw new \Exception('Invalid product type');
+        }
+    }
+
+    private function createBook($productData)
+    {
+        $this->validateNumericFields(['weight'], $productData);
+        return new Book(
+            $productData['sku'],
+            $productData['name'],
+            $productData['price'],
+            $productData['weight'],
+            $this->db
+        );
+    }
+
+    private function createDvd($productData)
+    {
+        $this->validateNumericFields(['size'], $productData);
+        return new Dvd(
+            $productData['sku'],
+            $productData['name'],
+            $productData['price'],
+            $productData['size'],
+            $this->db
+        );
+    }
+
+    private function createFurniture($productData)
+    {
+        $this->validateNumericFields(['height', 'width', 'length'], $productData);
+        return new Furniture(
+            $productData['sku'],
+            $productData['name'],
+            $productData['price'],
+            $productData['height'],
+            $productData['width'],
+            $productData['length'],
+            $this->db
+        );
+    }
+
+    private function validateProductData($productData)
+    {
+        $requiredFields = ['sku', 'name', 'price', 'productType'];
+        $errors = [];
+
+        foreach ($requiredFields as $field) {
+            if (!isset($productData[$field]) || empty($productData[$field])) {
+                $errors[$field] = ucfirst($field) . ' field is required.';
+            }
+        }
+
+        if (!empty($errors)) {
+            throw new \Exception('Invalid product data: ' . implode(', ', $errors));
+        }
+    }
+
+    private function validateNumericFields($fields, $productData)
+    {
+        $errors = [];
+
+        foreach ($fields as $field) {
+            if (!is_numeric($productData[$field])) {
+                $errors[$field] = ucfirst($field) . ' must be a valid number.';
+            }
+        }
+
+        if (!empty($errors)) {
+            throw new \Exception('Invalid product data: ' . implode(', ', $errors));
+        }
     }
 
     private function validateCommonFields($productData)
     {
         $requiredFields = ['sku', 'name', 'price', 'productType'];
         $errors = [];
+
         foreach ($requiredFields as $field) {
             if (!isset($productData[$field]) || empty($productData[$field])) {
-                $errors[$field] = ucfirst($field) . 'Field is required.';
+                $errors[$field] = ucfirst($field) . ' field is required.';
             }
         }
 
@@ -115,39 +207,6 @@ class SaveApi
         }
 
         return $productTypeErrors;
-    }
-
-    private function createProduct($productType, $productData)
-    {
-        switch ($productType) {
-            case 'dvd':
-                return new Dvd($productData['sku'], $productData['name'], $productData['price'], $productData['size'], $this->db);
-            case 'book':
-                return new Book($productData['sku'], $productData['name'], $productData['price'], $productData['weight'], $this->db);
-            case 'furniture':
-                return new Furniture($productData['sku'], $productData['name'], $productData['price'], $productData['height'], $productData['width'], $productData['length'], $this->db);
-            default:
-                return null; // Handle invalid product type
-        }
-    }
-
-    private function saveProduct($product, $productData)
-    {
-        if ($product) {
-            try {
-                $product->save();
-
-                // Save the SKU in a session
-                session_start();
-                $_SESSION['last_added_sku'] = $productData['sku'];
-
-                return ['message' => 'Product saved successfully', 'redirect' => 'index.php'];
-            } catch (\Exception $e) {
-                return ['error' => 'Failed to save the product'];
-            }
-        }
-
-        return ['error' => 'Invalid product type'];
     }
 
     private function cancelProduct($action)

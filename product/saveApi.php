@@ -1,11 +1,16 @@
 <?php
 
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
+
 require_once '../autoload/Autoloader.php';
 
 use App\Database;
 use App\Dvd;
 use App\Book;
 use App\Furniture;
+use App\ProductFactory;
+use App\Validations; 
 
 class SaveApi
 {
@@ -27,11 +32,10 @@ class SaveApi
             if (isset($productData['sku'])) {
                 $productType = $productData['productType'];
     
-                $commonErrors = $this->validateCommonFields($productData);
-                $productTypeErrors = $this->validateProductTypeFields($productType, $productData);
-                $existingSkuError = $this->validateExistingSku($productData['sku']);
-                
-                // Check for validation errors
+                $commonErrors = Validations::validateCommonFields($productData);
+                $productTypeErrors = Validations::validateProductTypeFields($productType, $productData);
+                $existingSkuError = Validations::validateExistingSku($productData['sku'], $this->db);
+    
                 $errors = array_merge($commonErrors, $productTypeErrors);
     
                 if ($existingSkuError) {
@@ -39,7 +43,7 @@ class SaveApi
                 }
     
                 if (empty($errors)) {
-                    $product = $this->createProduct($productType, $productData);
+                    $product = $this->createProduct($productType, $productData, $this->db);
     
                     if ($product) {
                         try {
@@ -65,148 +69,22 @@ class SaveApi
         }
     
         return ['error' => 'Invalid request'];
-    }
+    }    
     
-    private function createProduct($productType, $productData)
+        private function createProduct($productType, $productData)
     {
-        $this->validateProductData($productData);
+        Validations::validateCommonFields($productData);
 
         switch ($productType) {
             case 'book':
-                return $this->createBook($productData);
+                return ProductFactory::createBook($productData, $this->db);
             case 'dvd':
-                return $this->createDvd($productData);
+                return ProductFactory::createDvd($productData, $this->db);
             case 'furniture':
-                return $this->createFurniture($productData);
+                return ProductFactory::createFurniture($productData, $this->db);
             default:
                 throw new \Exception('Invalid product type');
         }
-    }
-
-    private function createBook($productData)
-    {
-        $this->validateNumericFields(['weight'], $productData);
-        return new Book(
-            $productData['sku'],
-            $productData['name'],
-            $productData['price'],
-            $productData['weight'],
-            $this->db
-        );
-    }
-
-    private function createDvd($productData)
-    {
-        $this->validateNumericFields(['size'], $productData);
-        return new Dvd(
-            $productData['sku'],
-            $productData['name'],
-            $productData['price'],
-            $productData['size'],
-            $this->db
-        );
-    }
-
-    private function createFurniture($productData)
-    {
-        $this->validateNumericFields(['height', 'width', 'length'], $productData);
-        return new Furniture(
-            $productData['sku'],
-            $productData['name'],
-            $productData['price'],
-            $productData['height'],
-            $productData['width'],
-            $productData['length'],
-            $this->db
-        );
-    }
-
-    private function validateProductData($productData)
-    {
-        $requiredFields = ['sku', 'name', 'price', 'productType'];
-        $errors = [];
-
-        foreach ($requiredFields as $field) {
-            if (!isset($productData[$field]) || empty($productData[$field])) {
-                $errors[$field] = ucfirst($field) . ' field is required.';
-            }
-        }
-
-        if (!empty($errors)) {
-            throw new \Exception('Invalid product data: ' . implode(', ', $errors));
-        }
-    }
-
-    private function validateNumericFields($fields, $productData)
-    {
-        $errors = [];
-
-        foreach ($fields as $field) {
-            if (!is_numeric($productData[$field])) {
-                $errors[$field] = ucfirst($field) . ' must be a valid number.';
-            }
-        }
-
-        if (!empty($errors)) {
-            throw new \Exception('Invalid product data: ' . implode(', ', $errors));
-        }
-    }
-
-    private function validateCommonFields($productData)
-    {
-        $requiredFields = ['sku', 'name', 'price', 'productType'];
-        $errors = [];
-
-        foreach ($requiredFields as $field) {
-            if (!isset($productData[$field]) || empty($productData[$field])) {
-                $errors[$field] = ucfirst($field) . ' field is required.';
-            }
-        }
-
-        return $errors;
-    }
-
-    private function validateExistingSku($sku)
-    {
-        $skuCheckQuery = "SELECT COUNT(*) FROM products WHERE sku = :sku";
-        $skuCheckStatement = $this->db->getConnection()->prepare($skuCheckQuery);
-        $skuCheckStatement->execute(['sku' => $sku]);
-        $skuCount = $skuCheckStatement->fetchColumn();
-
-        if ($skuCount > 0) {
-            return 'This SKU has already been used';
-        }
-
-        return null; // No error
-    }
-
-    private function validateProductTypeFields($productType, $productData)
-    {
-        $productTypeErrors = [];
-
-        if ($productType === 'dvd' && !is_numeric($productData['size'])) {
-            $productTypeErrors['size'] = 'Size must be a valid number.';
-        }
-
-        if ($productType === 'book' && !is_numeric($productData['weight'])) {
-            $productTypeErrors['weight'] = 'Weight must be a valid number.';
-        }
-
-        if ($productType === 'furniture') {
-            if (!is_numeric($productData['height'])) {
-                $productTypeErrors['height'] = 'Height must be a valid number.';
-            }
-
-            if (!is_numeric($productData['width'])) {
-                $productTypeErrors['width'] = 'Width must be a valid number.';
-            }
-
-            if (!is_numeric($productData['length'])) {
-                $productTypeErrors['length'] = 'Length must be a valid number.';
-            }
-        }
-
-        return $productTypeErrors;
     }
 
     private function cancelProduct($action)

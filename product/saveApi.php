@@ -71,22 +71,19 @@ class SaveApi
         return ['error' => 'Invalid request'];
     }    
     
-        private function createProduct($productType, $productData)
+    private function createProduct($productType, $productData)
     {
         Validations::validateCommonFields($productData);
-
-        switch ($productType) {
-            case 'book':
-                return ProductFactory::createBook($productData, $this->db);
-            case 'dvd':
-                return ProductFactory::createDvd($productData, $this->db);
-            case 'furniture':
-                return ProductFactory::createFurniture($productData, $this->db);
-            default:
-                throw new \Exception('Invalid product type');
+    
+        $methodName = 'create' . ucfirst($productType);
+        
+        if (method_exists(ProductFactory::class, $methodName)) {
+            return ProductFactory::$methodName($productData, $this->db);
+        } else {
+            throw new \Exception('Invalid product type');
         }
     }
-
+    
     private function cancelProduct($action)
     {
         if ($action) {

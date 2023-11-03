@@ -4,6 +4,7 @@ namespace App;
 
 class ProductFactory
 {
+    //function create book product
     public static function createBook($productData, $db)
     {
         Validations::validateNumericFields(['weight'], $productData);
@@ -16,6 +17,7 @@ class ProductFactory
         );
     }
 
+    //function to create dvd product
     public static function createDvd($productData, $db)
     {
         Validations::validateNumericFields(['size'], $productData);
@@ -28,6 +30,7 @@ class ProductFactory
         );
     }
 
+    //function to create furniture product
     public static function createFurniture($productData, $db)
     {
         Validations::validateNumericFields(['height', 'width', 'length'], $productData);

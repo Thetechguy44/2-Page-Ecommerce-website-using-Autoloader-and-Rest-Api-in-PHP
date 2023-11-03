@@ -21,6 +21,7 @@ class SaveApi
         $this->db = $db;
     }
 
+    //funtion to handle incoming request and saving to database
     public function handleRequest()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -71,6 +72,7 @@ class SaveApi
         return ['error' => 'Invalid request'];
     }    
     
+    //function to create product base on producttype before saving
     private function createProduct($productType, $productData)
     {
         Validations::validateCommonFields($productData);
@@ -84,6 +86,7 @@ class SaveApi
         }
     }
     
+    //function for handling cancel product after saving 
     private function cancelProduct($action)
     {
         if ($action) {
@@ -106,6 +109,7 @@ class SaveApi
         return ['error' => 'Invalid product type'];
     }
 
+    //function for handling mass deletion
     private function deleteProducts($productData)
     {
         $productIds = $productData['productIds'];
@@ -122,6 +126,7 @@ class SaveApi
     }
 }
 
+// Initialize the saveApi class 
 $config = require '../config.php';
 $db = new Database($config);
 $api = new SaveApi($db);

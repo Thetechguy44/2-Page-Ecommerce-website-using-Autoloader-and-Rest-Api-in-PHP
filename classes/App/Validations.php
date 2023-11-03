@@ -4,6 +4,7 @@ namespace App;
 
 class Validations
 {
+    //function for numeric field validation
     public static function validateNumericFields($fields, $productData)
     {
         $errors = [];
@@ -19,6 +20,7 @@ class Validations
         }
     }
 
+    //function for common field validation
     public static function validateCommonFields($productData)
     {
         $requiredFields = ['sku', 'name', 'price', 'productType'];
@@ -33,6 +35,7 @@ class Validations
         return $errors;
     }
 
+    //function for existing sku validation
     public static function validateExistingSku($sku, $db)
     {
         $skuCheckQuery = "SELECT COUNT(*) FROM products WHERE sku = :sku";
@@ -47,6 +50,7 @@ class Validations
         return null; // No error
     }
 
+    //function for producttype numeric field validation
     public static function validateProductTypeFields($productType, $productData)
     {
         $productTypeErrors = [];

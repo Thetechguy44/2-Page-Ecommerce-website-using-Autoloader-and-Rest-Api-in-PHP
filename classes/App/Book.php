@@ -1,5 +1,4 @@
 <?php
-// classes/book.php
 
 namespace App;
 

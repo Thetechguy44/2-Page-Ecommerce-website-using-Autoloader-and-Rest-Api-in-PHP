@@ -17,6 +17,7 @@ class getApi {
         $this->db = new Database($config);
     }
 
+    //fuction handling get request
     public function handleGetRequest() {
         if (isset($_GET['sku'])) {
             $sku = $_GET['sku'];
@@ -26,6 +27,7 @@ class getApi {
         }
     }
 
+    //fuction handling get request by sku
     private function getProductBySku($sku) {
         $query = "SELECT * FROM products WHERE sku = :sku";
         $statement = $this->db->getConnection()->prepare($query);
@@ -40,6 +42,7 @@ class getApi {
         return $productData;
     }
 
+    //fuction handling get all product
     private function getAllProducts() {
         $query = "SELECT * FROM products";
         $statement = $this->db->getConnection()->prepare($query);

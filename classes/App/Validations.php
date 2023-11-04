@@ -54,29 +54,62 @@ class Validations
     public static function validateProductTypeFields($productType, $productData)
     {
         $productTypeErrors = [];
-
-        if ($productType === 'dvd' && !is_numeric($productData['size'])) {
-            $productTypeErrors['size'] = 'Size must be a valid number.';
+        
+        // Create the method name based on the product type
+        $methodName = 'validate' . ucfirst($productType) . 'Fields';
+    
+        // Check if the method exists and call it
+        if (method_exists(self::class, $methodName)) {
+            $productTypeErrors = self::$methodName($productData);
+        } else {
+            throw new \Exception('Invalid product type');
         }
-
-        if ($productType === 'book' && !is_numeric($productData['weight'])) {
-            $productTypeErrors['weight'] = 'Weight must be a valid number.';
-        }
-
-        if ($productType === 'furniture') {
-            if (!is_numeric($productData['height'])) {
-                $productTypeErrors['height'] = 'Height must be a valid number.';
-            }
-
-            if (!is_numeric($productData['width'])) {
-                $productTypeErrors['width'] = 'Width must be a valid number.';
-            }
-
-            if (!is_numeric($productData['length'])) {
-                $productTypeErrors['length'] = 'Length must be a valid number.';
-            }
-        }
-
+    
         return $productTypeErrors;
     }
+    
+    //prefix function for dvd numeric field validation
+    private static function validateDvdFields($productData)
+    {
+        $productTypeErrors = [];
+    
+        if (!is_numeric($productData['size'])) {
+            $productTypeErrors['size'] = 'Size must be a valid number.';
+        }
+    
+        return $productTypeErrors;
+    }
+    
+    //prefix function for book numeric field validation
+    private static function validateBookFields($productData)
+    {
+        $productTypeErrors = [];
+    
+        if (!is_numeric($productData['weight'])) {
+            $productTypeErrors['weight'] = 'Weight must be a valid number.';
+        }
+    
+        return $productTypeErrors;
+    }
+    
+    //prefix function for furniture numeric field validation
+    private static function validateFurnitureFields($productData)
+    {
+        $productTypeErrors = [];
+    
+        if (!is_numeric($productData['height'])) {
+            $productTypeErrors['height'] = 'Height must be a valid number.';
+        }
+    
+        if (!is_numeric($productData['width'])) {
+            $productTypeErrors['width'] = 'Width must be a valid number.';
+        }
+    
+        if (!is_numeric($productData['length'])) {
+            $productTypeErrors['length'] = 'Length must be a valid number.';
+        }
+    
+        return $productTypeErrors;
+    }
+    
 }

@@ -3,6 +3,6 @@
 return [
     'host' => 'localhost',     // Database host
     'username' => 'root',      // Database username
-    'password' => '',  // Database password
+    'password' => 'Dev@gana',  // Database password
     'database' => 'scandiweb', // Database name
 ];
